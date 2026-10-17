@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#030914">
+<title>JARVIS AI</title>
+<style>
+:root{--bg:#030914;--panel:#071a2a;--line:#0b6b9d;--cyan:#28d7ff;--blue:#168cff;--text:#e8f8ff;--muted:#8db6ca}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 5%,#082744 0,#030914 48%,#01040a 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 16px 10px;border-bottom:1px solid #0d4567;position:sticky;top:0;background:#030914eF;backdrop-filter:blur(12px);z-index:5}
+.brand{letter-spacing:.22em;font-weight:800;font-size:21px}.status{font-size:11px;color:#5dffbd;letter-spacing:.12em}.dot{display:inline-block;width:7px;height:7px;background:#42ffb0;border-radius:50%;margin-right:6px;box-shadow:0 0 9px #42ffb0}
+main{max-width:720px;margin:auto;padding:14px 14px 32px}.hero{text-align:center;padding:22px 8px 16px}
+.ring{width:176px;height:176px;border-radius:50%;border:1px solid #0874a5;display:grid;place-items:center;margin:0 auto 14px;position:relative;box-shadow:0 0 22px #007cb44a,inset 0 0 25px #007cb42a}
+.ring:before,.ring:after{content:"";position:absolute;border-radius:50%;border:2px solid transparent;border-top-color:var(--cyan);border-bottom-color:#1478bd;inset:10px;animation:spin 8s linear infinite}
+.ring:after{inset:22px;border-width:1px;border-left-color:#159cff;border-right-color:#159cff;animation-direction:reverse;animation-duration:5s}
+@keyframes spin{to{transform:rotate(360deg)}}.core{z-index:1;text-align:center}.core strong{display:block;font-size:20px;letter-spacing:.12em}.core small{color:var(--muted);font-size:11px}
+#state{color:var(--cyan);font-size:12px;letter-spacing:.12em;margin:10px 0 4px}.hint{color:var(--muted);font-size:12px}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px 0}.tile{border:1px solid #0c4e71;background:linear-gradient(145deg,#082238,#04111e);border-radius:13px;padding:14px 8px;text-align:center;min-height:76px;color:var(--text);cursor:pointer}.tile .ico{font-size:22px;display:block;color:var(--cyan);margin-bottom:5px}.tile span:last-child{font-size:12px}
+.panel{border:1px solid #0b4667;background:#061522d9;border-radius:15px;padding:14px;margin:12px 0}.panel h2{font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin:0 0 10px}
+#chat{height:200px;overflow:auto;display:flex;flex-direction:column;gap:8px}.msg{padding:9px 11px;border-radius:11px;max-width:90%;font-size:13px;line-height:1.45;white-space:pre-wrap}.bot{background:#0a2a40;border:1px solid #0b5277;align-self:flex-start}.user{background:#073b61;border:1px solid #087db4;align-self:flex-end}
+.compose{display:flex;gap:7px;margin-top:10px}.compose input{min-width:0;flex:1;background:#020b14;color:white;border:1px solid #14516f;border-radius:10px;padding:12px;font-size:14px;outline:none}.btn{background:#0879b5;color:white;border:1px solid #21c9ff;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer}.btn.secondary{background:#071b2a;border-color:#14516f;color:var(--cyan)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #103247;font-size:13px}.row:last-child{border-bottom:0}.row small{display:block;color:var(--muted);margin-top:3px}.toggle{accent-color:#16c8ff;width:18px;height:18px}
+textarea{width:100%;background:#020b14;color:white;border:1px solid #14516f;border-radius:10px;padding:10px;min-height:75px;resize:vertical}
+footer{text-align:center;color:#527c92;font-size:10px;letter-spacing:.16em;padding:18px}
+@media(min-width:560px){.actions{grid-template-columns:repeat(6,1fr)}.ring{width:200px;height:200px}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">JARVIS <span style="color:var(--cyan)">AI</span></div><div class="status"><i class="dot"></i>LOCAL INTERFACE READY</div></div><button class="btn secondary" id="settingsBtn">⚙</button></header>
+<main>
+<section class="hero">
+<div class="ring" id="ring"><div class="core"><strong>J.A.R.V.I.S.</strong><small>PERSONAL ASSISTANT</small></div></div>
+<div id="state">SYSTEM STANDBY</div><div class="hint">Tap the microphone to speak, or type a command below.</div>
+<div style="display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn" id="micBtn">🎙 Speak</button><button class="btn secondary" id="stopBtn">■ Stop voice</button></div>
+</section>
+<div class="actions">
+<button class="tile" data-action="chat"><span class="ico">◉</span><span>AI Chat</span></button>
+<button class="tile" data-action="web"><span class="ico">◎</span><span>Web Search</span></button>
+<button class="tile" data-action="vision"><span class="ico">▣</span><span>Vision</span></button>
+<button class="tile" data-action="memory"><span class="ico">▤</span><span>Memory</span></button>
+<button class="tile" data-action="automation"><span class="ico">⌘</span><span>Automation</span></button>
+<button class="tile" data-action="hud"><span class="ico">✧</span><span>HUD Mode</span></button>
+</div>
+<section class="panel" id="chatPanel"><h2>Conversation</h2><div id="chat"><div class="msg bot">Hello. I'm JARVIS. My interface is ready. AI responses, online memory sync, and locked-screen wake-word detection need additional setup.</div></div><div class="compose"><input id="message" placeholder="Type a message or command…" autocomplete="off"><button class="btn" id="sendBtn">Send</button></div></section>
+<section class="panel" id="toolsPanel"><h2>System controls</h2>
+<div class="row"><div>Voice output<small>Read JARVIS replies aloud on this page</small></div><input class="toggle" type="checkbox" id="voiceOut" checked></div>
+<div class="row"><div>Save local memory<small>Store notes in this browser on this device</small></div><input class="toggle" type="checkbox" id="memoryOn" checked></div>
+<div class="row"><div>Wake-word listening<small>Browser listening works only while this page is active; not reliable when locked</small></div><button class="btn secondary" id="wakeBtn">Start</button></div>
+</section>
+<section class="panel" id="memoryPanel"><h2>Memory vault</h2><textarea id="memoryText" placeholder="Write a note for JARVIS to remember on this device…"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="saveMemory">Save note</button><button class="btn secondary" id="showMemory">Show notes</button></div><div id="memoryList" class="hint" style="margin-top:10px"></div></section>
+<section class="panel" id="visionPanel"><h2>Vision preview</h2><p class="hint">Choose an image to preview it in this interface. This starter does not yet run AI image analysis.</p><input id="imageInput" type="file" accept="image/*" capture="environment" style="max-width:100%"><img id="preview" alt="Selected image preview" style="display:none;width:100%;max-height:280px;object-fit:contain;border-radius:10px;margin-top:10px"><div id="visionStatus" class="hint"></div></section>
+<section class="panel" id="automationPanel"><h2>Quick actions</h2><button class="btn secondary" data-command="What can you do?">Help</button> <button class="btn secondary" data-command="Open YouTube">Open YouTube</button> <button class="btn secondary" data-command="Search the web for JARVIS AI">Search JARVIS AI</button><p class="hint">For safety, this starter does not control phone settings or execute background actions.</p></section>
+<footer>JARVIS AI • ANDROID STARTER • BUILD 0.1</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const chat=$('chat'); let recognition=null, wakeOn=false;
+function addMsg(text,who='bot'){const d=document.createElement('div');d.className='msg '+who;d.textContent=text;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;}
+function speak(text){if($('voiceOut').checked && 'speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=1;u.pitch=.9;speechSynthesis.speak(u)}}
+function answer(raw){const q=raw.trim();if(!q)return;addMsg(q,'user');$('message').value='';let r='';
+const l=q.toLowerCase();
+if(l.includes('what can you do')||l==='help')r='I can demonstrate this interface, open web searches, speak replies, and save local notes. Real AI requires connecting an AI service.';
+else if(l.includes('open youtube')){r='Opening YouTube in your browser.';window.open('https://m.youtube.com','_blank');}
+else if(l.includes('search')||l.includes('google')||l.includes('web')){r='I can open a web search for that.';window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank');}
+else if(l.includes('time'))r='Your device time is '+new Date().toLocaleTimeString()+'.';
+else if(l.includes('date'))r='Today is '+new Date().toLocaleDateString()+'.';
+else if(l.includes('remember ')){const note=q.replace(/remember/i,'').trim();if($('memoryOn').checked){let a=JSON.parse(localStorage.getItem('jarvisNotes')||'[]');a.push({note,at:new Date().toLocaleString()});localStorage.setItem('jarvisNotes',JSON.stringify(a));r='Saved that note in local memory on this device.';}else r='Local memory is switched off.';}
+else r='I received your message. This starter is not connected to an AI model yet, so I cannot generate a full intelligent answer until we connect an AI service.';
+addMsg(r);speak(r);}
+$('sendBtn').onclick=()=>answer($('message').value);$('message').addEventListener('keydown',e=>{if(e.key==='Enter')answer($('message').value)});
+document.querySelectorAll('[data-command]').forEach(b=>b.onclick=()=>answer(b.dataset.command));
+document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{const a=b.dataset.action;const map={chat:'chatPanel',web:null,vision:'visionPanel',memory:'memoryPanel',automation:'automationPanel',hud:null};if(a==='web'){window.open('https://www.google.com','_blank');return;}if(a==='hud'){document.body.classList.toggle('hudmode');$('state').textContent='HUD DISPLAY MODE';return;}$(map[a])?.scrollIntoView({behavior:'smooth',block:'start'});});
+$('micBtn').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('state').textContent='VOICE INPUT NOT SUPPORTED';addMsg('Speech recognition is not available in this browser. Try Chrome and allow microphone access.');return;}try{recognition=new SR();recognition.lang='en-IN';recognition.interimResults=false;recognition.onstart=()=>{$('state').textContent='LISTENING…';$('ring').style.filter='drop-shadow(0 0 15px #00cfff)'};recognition.onerror=e=>{$('state').textContent='VOICE ERROR: '+e.error};recognition.onend=()=>{$('state').textContent='SYSTEM STANDBY';$('ring').style.filter='none'};recognition.onresult=e=>answer(e.results[0][0].transcript);recognition.start();}catch(e){$('state').textContent='VOICE UNAVAILABLE';}};
+$('stopBtn').onclick=()=>{try{recognition?.stop()}catch(e){}if('speechSynthesis'in window)speechSynthesis.cancel();wakeOn=false;$('wakeBtn').textContent='Start';$('state').textContent='SYSTEM STANDBY';};
+$('wakeBtn').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('state').textContent='VOICE INPUT NOT SUPPORTED';return;}if(wakeOn){wakeOn=false;try{recognition?.stop()}catch(e){}$('wakeBtn').textContent='Start';$('state').textContent='SYSTEM STANDBY';return;}wakeOn=true;$('wakeBtn').textContent='Stop';$('state').textContent='WAKE LISTENING — KEEP PAGE ACTIVE';const listen=()=>{if(!wakeOn)return;try{recognition=new SR();recognition.lang='en-IN';recognition.continuous=false;recognition.onresult=e=>{const t=e.results[0][0].transcript.toLowerCase();if(t.includes('hey jarvis')||t.includes('jarvis')){addMsg('Wake word detected.','bot');speak('Yes? How can I help?');}else if(wakeOn){$('state').textContent='SAY “HEY JARVIS”';}};recognition.onerror=()=>{};recognition.onend=()=>{if(wakeOn)setTimeout(listen,500)};recognition.start();}catch(e){$('state').textContent='WAKE LISTENING UNAVAILABLE';}};listen();};
+$('saveMemory').onclick=()=>{const note=$('memoryText').value.trim();if(!note)return;let a=JSON.parse(localStorage.getItem('jarvisNotes')||'[]');a.push({note,at:new Date().toLocaleString()});localStorage.setItem('jarvisNotes',JSON.stringify(a));$('memoryText').value='';$('memoryList').textContent='Note saved on this device.';};
+$('showMemory').onclick=()=>{const a=JSON.parse(localStorage.getItem('jarvisNotes')||'[]');$('memoryList').textContent=a.length?a.map((x,i)=>(i+1)+'. '+x.note+' ('+x.at+')').join('\n'):'No saved notes yet.';$('memoryList').style.whiteSpace='pre-wrap';};
+$('imageInput').onchange=e=>{const f=e.target.files?.[0];if(!f)return;$('preview').src=URL.createObjectURL(f);$('preview').style.display='block';$('visionStatus').textContent='Image preview loaded. AI analysis is not connected yet.';};
+$('settingsBtn').onclick=()=>$('toolsPanel').scrollIntoView({behavior:'smooth'});
+</script>
+</body></html>
